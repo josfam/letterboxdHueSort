@@ -36,6 +36,6 @@ representation of movie posters from the `test_images` folder.
 ![approximate-order-of-manually-sorted-film-posters](images/manual-sort-examples/manual-sort-of-test-images.jpg)
 \
 \
-_Note_: The film posters above are just a visual aid, and not actually output from the hueSort program.
+_Note_: The film posters above are just a visual aid, and not actually output from the letterboxdHueSort program.
 \
-The sort order of the hueSort program will differ from the above manually generated order.
+The sort order of the letterboxdHueSort program will differ from the above manually generated order.
