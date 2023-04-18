@@ -11,33 +11,38 @@ film_csv_path: str = args.film_list_csv
 
 
 def main():
-    csv_path = get_proper_csv_path(film_csv_path)
+    csv_path = get_csv_absolute_path(film_csv_path)
 
 
-def get_proper_csv_path(film_csv_path: str) -> str:
-    """Returns the absolute path of an existing csv file"""
+
+def get_csv_absolute_path(film_csv_path: str) -> str:
+    """Gets and returns the user-entered absolute path of the csv file.
+
+    If no absolute path is given, the user is repeatedly prompted.
+    """
     # only absolute paths are accepted
     while not PurePath.is_absolute(PurePath(film_csv_path)):
         short_message = 'The path you provided is not a full path.'
-        film_csv_path = ask_for_csv_path(short_message)
+        film_csv_path = get_csv_path(short_message)
 
     # the file must exist
     while not Path.exists(Path(film_csv_path)):
         short_message = 'The file you provided does not exist.'
-        film_csv_path = ask_for_csv_path(short_message)
+        film_csv_path = get_csv_path(short_message)
 
     # the existing file must be a .csv file
     while '.csv' not in PurePath(film_csv_path).suffix:
         short_message = 'The file you provided is not a .csv file.'
-        film_csv_path = ask_for_csv_path(short_message)
+        film_csv_path = get_csv_path(short_message)
 
     return film_csv_path
 
 
-def ask_for_csv_path(short_message: str) -> str:
-    """Asks the user for the path of the film csv file.
-    The message displayed is a combination of a short message, and a message that asks
-    for the absolute path.
+def get_csv_path(short_message: str) -> str:
+    """Gets, and returns the user-entered csv path.
+
+    The message displayed while asking for input is a combination of the provided short message,
+    and a message that asks for an absolute path to be entered.
     """
     full_message = dedent(
         f"""
