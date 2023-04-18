@@ -18,55 +18,41 @@ def get_proper_csv_path(film_csv_path: str) -> str:
     """Returns the absolute path of an existing csv file"""
     # only absolute paths are accepted
     while not PurePath.is_absolute(PurePath(film_csv_path)):
-        message = dedent(
-            """
-            The path you provided is not a full path.
-            Please provide the full path of your films' csv file.
-            (q to quit)
-            full path > """
-        )
-        try:
-            film_csv_path = input(message)
-        except KeyboardInterrupt:
-            sys.exit('\nGoodbye')
-        else:
-            if film_csv_path.lower() == 'q':
-                sys.exit('Goodbye!')
+        short_message = 'The path you provided is not a full path.'
+        film_csv_path = ask_for_csv_path(short_message)
 
     # the file must exist
     while not Path.exists(Path(film_csv_path)):
-        message = dedent(
-            """
-            The file you provided does not exist.
-            Please re-enter the full path again.
-            (q to quit)
-            full path > """
-        )
-        try:
-            film_csv_path = input(message)
-        except KeyboardInterrupt:
-            sys.exit('\nGoodbye')
-        else:
-            if film_csv_path.lower() == 'q':
-                sys.exit('Goodbye!')
+        short_message = 'The file you provided does not exist.'
+        film_csv_path = ask_for_csv_path(short_message)
 
     # the existing file must be a .csv file
     while '.csv' not in PurePath(film_csv_path).suffix:
-        message = dedent(
-            """
-            The file you provided is not a .csv file.
-            Please re-enter the full path again.
-            (q to quit)
-            full path > """
-        )
-        try:
-            film_csv_path = input(message)
-        except KeyboardInterrupt:
-            sys.exit('\nGoodbye')
-        else:
-            if film_csv_path.lower() == 'q':
-                sys.exit('Goodbye!')
+        short_message = 'The file you provided is not a .csv file.'
+        film_csv_path = ask_for_csv_path(short_message)
 
+    return film_csv_path
+
+
+def ask_for_csv_path(short_message: str) -> str:
+    """Asks the user for the path of the film csv file.
+    The message displayed is a combination of a short message, and a message that asks
+    for the absolute path.
+    """
+    full_message = dedent(
+        f"""
+        {short_message}
+        Please re-enter the full path again.
+        (q to quit)
+        full path > """
+    )
+    try:
+        film_csv_path = input(full_message)
+    except KeyboardInterrupt:
+        sys.exit('\nGoodbye')
+    else:
+        if film_csv_path.lower() == 'q':
+            sys.exit('Goodbye!')
     return film_csv_path
 
 
