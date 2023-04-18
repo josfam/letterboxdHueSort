@@ -2,6 +2,11 @@ from pathlib import Path, PurePath
 import argparse
 from textwrap import dedent
 import sys
+import csv
+import re
+
+# The maximum number of lines in the csv file within which valid column headers must exist
+MAX_CSV_ROWS_TO_FIND_HEADERS = 6
 
 parser = argparse.ArgumentParser()
 parser.add_argument('film_list_csv', help='Absolute path of the csv file representing your letterboxd film list')
@@ -12,7 +17,8 @@ film_csv_path: str = args.film_list_csv
 
 def main():
     csv_path = get_csv_absolute_path(film_csv_path)
-
+    if not is_valid_letterboxd_format(csv_path):
+        sys.exit(get_valid_csv_format_message())
 
 
 def get_csv_absolute_path(film_csv_path: str) -> str:
@@ -59,6 +65,61 @@ def get_csv_path(short_message: str) -> str:
         if film_csv_path.lower() == 'q':
             sys.exit('Goodbye!')
     return film_csv_path
+
+
+def is_valid_letterboxd_format(csv_file: str, max_lines_to_check=MAX_CSV_ROWS_TO_FIND_HEADERS) -> bool:
+    """Checks whether the provided csv list of films has column headers compatible with
+    Letterboxd's csv format.
+
+    The provided file must include at least the two columns `URL`(or `LetterboxdURI`) and `Name`.
+    The `URL` points to the film's page on `https://letterboxd.com/`, and
+    The `Name` is the name/title of the film.
+    """
+    with open(csv_file, 'r', encoding='utf-8') as f:
+        line_count = 0
+        reader = csv.reader(f)
+
+        for line in reader:
+            if line_count == max_lines_to_check:
+                return False
+            
+            rows = ', '.join(line)
+            # Name and URL column headers can be in any order
+            if match := re.search(r'(Name,).*(URL)|(URL,).*(Name)', rows):
+                return True
+            line_count += 1
+    return True
+
+
+def get_valid_csv_format_message() -> str:
+    """Returns information about expected format for the movie list csv file."""
+    message = dedent(
+        f"""
+    Could not find either or both of the column labels `Name` and `URL`.
+    
+    Make sure those column labels occur within the first {MAX_CSV_ROWS_TO_FIND_HEADERS} lines of your
+    csv file.
+    
+    The expected format looks similar to this 
+    (`Name` and `URL` columns can be in any order in your CSV file):
+
+    │ ... │ ...    │ ... │ ...                  │ ... │
+    ├─────┼────────┼─────┼──────────────────────┼─────┤
+    │ ... │ Name   │ ... │ URL                  │ ... │
+    ├─────┼────────┼─────┼──────────────────────┼─────┤
+    │ ... │ Amélie │ ... │ https://boxd.it/2aUc │ ... │
+    ├─────┼────────┼─────┼──────────────────────┼─────┤
+    │ ... │ RRR    │ ... │ https://boxd.it/ljDs │ ... │
+    ├─────┼────────┼─────┼──────────────────────┼─────┤
+    │ ... │ Oldboy │ ... │ https://boxd.it/29R2 │ ... │
+    ├─────┼────────┼─────┼──────────────────────┼─────┤
+    │ ... │ ...    │ ... │ ...                  │ ... │
+    
+    Check your csv file and try again.
+    """
+    )
+
+    return message
 
 
 if __name__ == '__main__':
