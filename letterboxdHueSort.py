@@ -17,36 +17,56 @@ def main():
 def get_proper_csv_path(film_csv_path: str) -> str:
     """Returns the absolute path of an existing csv file"""
     # only absolute paths are accepted
-    if not PurePath.is_absolute(PurePath(film_csv_path)):
-        while True:
-            message = dedent(
-                """
+    while not PurePath.is_absolute(PurePath(film_csv_path)):
+        message = dedent(
+            """
+            The path you provided is not a full path.
             Please provide the full path of your films' csv file.
             (q to quit)
             full path > """
-            )
-            try:
-                film_csv_path = input(message)
-            except KeyboardInterrupt:
-                sys.exit('\nGoodbye')
-
+        )
+        try:
+            film_csv_path = input(message)
+        except KeyboardInterrupt:
+            sys.exit('\nGoodbye')
+        else:
             if film_csv_path.lower() == 'q':
                 sys.exit('Goodbye!')
 
-            if not PurePath.is_absolute(PurePath(film_csv_path)):
-                continue
+    # the file must exist
+    while not Path.exists(Path(film_csv_path)):
+        message = dedent(
+            """
+            The file you provided does not exist.
+            Please re-enter the full path again.
+            (q to quit)
+            full path > """
+        )
+        try:
+            film_csv_path = input(message)
+        except KeyboardInterrupt:
+            sys.exit('\nGoodbye')
+        else:
+            if film_csv_path.lower() == 'q':
+                sys.exit('Goodbye!')
 
-            # the file must exist
-            elif not Path.exists(Path(film_csv_path)):
-                print('The file you provided does not exist. Try again.')
-                continue
+    # the existing file must be a .csv file
+    while '.csv' not in PurePath(film_csv_path).suffix:
+        message = dedent(
+            """
+            The file you provided is not a .csv file.
+            Please re-enter the full path again.
+            (q to quit)
+            full path > """
+        )
+        try:
+            film_csv_path = input(message)
+        except KeyboardInterrupt:
+            sys.exit('\nGoodbye')
+        else:
+            if film_csv_path.lower() == 'q':
+                sys.exit('Goodbye!')
 
-            # the existing file must be a .csv file
-            elif '.csv' not in PurePath(film_csv_path).suffix:
-                print('This file is not a .csv file. Try again.')
-                continue
-            else:
-                break
     return film_csv_path
 
 
