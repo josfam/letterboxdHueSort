@@ -4,7 +4,7 @@ from utils.csv_utils import (
     get_csv_absolute_path,
     is_valid_letterboxd_format,
     valid_csv_format_message,
-    get_header_and_non_header_data,
+    get_csv_sections,
 )
 
 parser = argparse.ArgumentParser()
@@ -18,7 +18,7 @@ def main():
     csv_path = get_csv_absolute_path(film_csv_path)
     if not is_valid_letterboxd_format(csv_path):
         sys.exit(valid_csv_format_message())
-    csv_info = get_header_and_non_header_data(csv_path)
+    csv_info = get_csv_sections(csv_path)
 
 
 if __name__ == '__main__':

@@ -98,7 +98,7 @@ def is_valid_letterboxd_format(
     return True
 
 
-def get_header_and_non_header_data(csv_file: str, header_pattern=CSV_REQUIRED_HEADERS_PATTERN) -> CSVInfo:
+def get_csv_sections(csv_file: str, header_pattern=CSV_REQUIRED_HEADERS_PATTERN) -> CSVInfo:
     """Returns the information in the csv file, split into three parts:
     1) The extra information included in the csv file before the header row is encountered
     2) The headers themselves
