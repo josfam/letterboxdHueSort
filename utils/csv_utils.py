@@ -5,6 +5,7 @@ from textwrap import dedent
 import sys
 import csv
 import re
+from collections import namedtuple
 
 MAX_CSV_ROWS_TO_FIND_HEADERS = 6
 
@@ -17,6 +18,8 @@ CSV_REQUIRED_HEADERS_PATTERN = r"""
 (Year).*(URL).*(Name)|
 (Year).*(Name).*(URL)
 """.strip()
+
+CSVInfo = namedtuple('CSVInfo', ['extra_info', 'headers', 'header_info'])
 
 
 def get_csv_absolute_path(film_csv_path: str) -> str:
@@ -93,6 +96,35 @@ def is_valid_letterboxd_format(
                 return True
             line_count += 1
     return True
+
+
+def get_header_and_non_header_data(csv_file: str, header_pattern=CSV_REQUIRED_HEADERS_PATTERN) -> CSVInfo:
+    """Returns the information in the csv file, split into three parts:
+    1) The extra information included in the csv file before the header row is encountered
+    2) The headers themselves
+    3) The information after the headers
+    """
+    extra_info = []
+    headers = None
+    header_info = []
+
+    with open(csv_file, 'r', encoding='utf-8') as f:
+        non_header_reader = csv.reader(f)
+
+        for non_header_line in non_header_reader:
+            rows = ', '.join(non_header_line)
+            if re.search(header_pattern, rows, re.VERBOSE):
+                headers = non_header_line
+                break
+            extra_info.append(non_header_line)
+
+        # switch to a dict reader to get the data under the header columns
+        header_reader = csv.DictReader(f, fieldnames=headers)
+
+        for header_line in header_reader:
+            header_info.append(header_line)
+
+    return CSVInfo(extra_info, headers, header_info)
 
 
 def valid_csv_format_message() -> str:

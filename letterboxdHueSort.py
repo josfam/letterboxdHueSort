@@ -1,6 +1,11 @@
 import argparse
 import sys
-from utils.csv_utils import get_csv_absolute_path, is_valid_letterboxd_format, valid_csv_format_message
+from utils.csv_utils import (
+    get_csv_absolute_path,
+    is_valid_letterboxd_format,
+    valid_csv_format_message,
+    get_header_and_non_header_data,
+)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('film_list_csv', help='Absolute path of the csv file representing your letterboxd film list')
@@ -13,6 +18,7 @@ def main():
     csv_path = get_csv_absolute_path(film_csv_path)
     if not is_valid_letterboxd_format(csv_path):
         sys.exit(valid_csv_format_message())
+    csv_info = get_header_and_non_header_data(csv_path)
 
 
 if __name__ == '__main__':
