@@ -19,7 +19,7 @@ CSV_REQUIRED_HEADERS_PATTERN = r"""
 (Year).*(Name).*(URL)
 """.strip()
 
-CSVInfo = namedtuple('CSVInfo', ['extra_info', 'headers', 'header_info'])
+CSVInfo = namedtuple('CSVInfo', ['extra_info', 'headers', 'film_info'])
 
 
 def get_csv_absolute_path(film_csv_path: str) -> str:
@@ -106,7 +106,7 @@ def get_csv_sections(csv_file: str, header_pattern=CSV_REQUIRED_HEADERS_PATTERN)
     """
     extra_info = []
     headers = None
-    header_info = []
+    film_info = []
 
     with open(csv_file, 'r', encoding='utf-8') as f:
         non_header_reader = csv.reader(f)
@@ -122,9 +122,9 @@ def get_csv_sections(csv_file: str, header_pattern=CSV_REQUIRED_HEADERS_PATTERN)
         header_reader = csv.DictReader(f, fieldnames=headers)
 
         for header_line in header_reader:
-            header_info.append(header_line)
+            film_info.append(header_line)
 
-    return CSVInfo(extra_info, headers, header_info)
+    return CSVInfo(extra_info, headers, film_info)
 
 
 def valid_csv_format_message() -> str:
