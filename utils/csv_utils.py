@@ -6,8 +6,17 @@ import sys
 import csv
 import re
 
-# The maximum number of lines in the csv file within which valid column headers must exist
 MAX_CSV_ROWS_TO_FIND_HEADERS = 6
+
+# all possible orders of the `URL`, `Name`, and `year` columns in the csv file
+CSV_REQUIRED_HEADERS_PATTERN = r"""
+(URL).*(Name).*(Year)|
+(URL).*(Year).*(Name)|
+(Name).*(URL).*(Year)|
+(Name).*(Year).*(URL)|
+(Year).*(URL).*(Name)|
+(Year).*(Name).*(URL)
+""".strip()
 
 
 def get_csv_absolute_path(film_csv_path: str) -> str:
@@ -56,13 +65,19 @@ def get_csv_path(short_message: str) -> str:
     return film_csv_path
 
 
-def is_valid_letterboxd_format(csv_file: str, max_lines_to_check=MAX_CSV_ROWS_TO_FIND_HEADERS) -> bool:
+def is_valid_letterboxd_format(
+    csv_file: str, max_lines_to_check=MAX_CSV_ROWS_TO_FIND_HEADERS, header_pattern=CSV_REQUIRED_HEADERS_PATTERN
+) -> bool:
     """Checks whether the provided csv list of films has column headers compatible with
     Letterboxd's csv format.
 
-    The provided file must include at least the two columns `URL`(or `LetterboxdURI`) and `Name`.
-    The `URL` points to the film's page on `https://letterboxd.com/`, and
-    The `Name` is the name/title of the film.
+    The provided file must include at least the three columns `URL`(or `LetterboxdURI`), `Name`, and `Year`.
+
+    The `URL` points to the film's page on `https://letterboxd.com/`,
+
+    The `Name` is the name/title of the film, and
+
+    The `Year` is the year of release of the film.
     """
     with open(csv_file, 'r', encoding='utf-8') as f:
         line_count = 0
@@ -74,7 +89,7 @@ def is_valid_letterboxd_format(csv_file: str, max_lines_to_check=MAX_CSV_ROWS_TO
 
             rows = ', '.join(line)
             # Name and URL column headers can be in any order
-            if match := re.search(r'(Name,).*(URL)|(URL,).*(Name)', rows):
+            if re.search(header_pattern, rows, re.VERBOSE):
                 return True
             line_count += 1
     return True
@@ -84,27 +99,27 @@ def valid_csv_format_message() -> str:
     """Returns information about expected format for the movie list csv file."""
     message = dedent(
         f"""
-    Could not find either or both of the column labels `Name` and `URL`.
+    Could not find all the required column labels `Name`, `URL` and `Year`.
     
     Make sure those column labels occur within the first {MAX_CSV_ROWS_TO_FIND_HEADERS} lines of your
     csv file.
     
     The expected format looks similar to this 
-    (`Name` and `URL` columns can be in any order):
+    Note: The `Name`, `URL`, and `Year` columns can be in any order:
 
-    │ ... │ ...    │ ... │ ...                  │ ... │
-    ├─────┼────────┼─────┼──────────────────────┼─────┤
-    │ ... │ Name   │ ... │ URL                  │ ... │
-    ├─────┼────────┼─────┼──────────────────────┼─────┤
-    │ ... │ Amélie │ ... │ https://boxd.it/2aUc │ ... │
-    ├─────┼────────┼─────┼──────────────────────┼─────┤
-    │ ... │ RRR    │ ... │ https://boxd.it/ljDs │ ... │
-    ├─────┼────────┼─────┼──────────────────────┼─────┤
-    │ ... │ Oldboy │ ... │ https://boxd.it/29R2 │ ... │
-    ├─────┼────────┼─────┼──────────────────────┼─────┤
-    │ ... │ ...    │ ... │ ...                  │ ... │
+    │ ... │ ...    │ ...  │ ...                  │ ... │
+    ├─────┼────────┼──────┼──────────────────────┼─────┤
+    │ ... │ Name   │ Year │ URL                  │ ... │
+    ├─────┼────────┼──────┼──────────────────────┼─────┤
+    │ ... │ Amélie │ 2001 │ https://boxd.it/2aUc │ ... │
+    ├─────┼────────┼──────┼──────────────────────┼─────┤
+    │ ... │ RRR    │ 2022 │ https://boxd.it/ljDs │ ... │
+    ├─────┼────────┼──────┼──────────────────────┼─────┤
+    │ ... │ Oldboy │ 2003 │ https://boxd.it/29R2 │ ... │
+    ├─────┼────────┼──────┼──────────────────────┼─────┤
+    │ ... │ ...    │ ...  │ ...                  │ ... │
     
-    Check your csv file and try again.
+    Check your csv file columns and try again.
     """
     )
 
