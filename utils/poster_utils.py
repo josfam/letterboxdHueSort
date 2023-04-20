@@ -54,10 +54,11 @@ def get_poster_contents(film_poster_url: str) -> bytes:
     return poster_contents
 
 
-def download_poster(poster_contents: bytes, film_name: str, download_location: str) -> None:
+def download_poster(poster_contents: bytes, film_name: str, download_location: str, extension='.jpg') -> None:
     """Downloads the film poster's contents (bytes), and saves them in the provided download location.
-    The image will be saved under a name that corresponds to the name of the film.
+    The image will be saved under a name that corresponds to the name of the film, and under the provided
+    file extension.
     """
-    picture_path = str(Path(download_location) / Path(film_name))
+    picture_path = str(Path(download_location) / Path(film_name + extension))
     with open(picture_path, 'wb') as f:
         f.write(poster_contents)
