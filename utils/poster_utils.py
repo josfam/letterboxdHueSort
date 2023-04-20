@@ -6,7 +6,7 @@ import requests
 from typing import Optional
 from pathlib import Path, PurePath
 
-FILM_POSTER_URL_PATTERN = r'https:\/\/a\.ltrbxd\.com\/resized\/film-poster.*?\.jpg'
+FILM_POSTER_URL_PATTERN = r'https:\/\/a\.ltrbxd\.com\/resized\/.*?\.jpg'
 
 
 def create_posters_dir(parent_dir: str, dir_name: str) -> str:
