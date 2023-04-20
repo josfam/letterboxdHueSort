@@ -5,6 +5,7 @@ import re
 import requests
 from typing import Optional
 from pathlib import Path, PurePath
+from bs4 import BeautifulSoup
 
 FILM_POSTER_URL_PATTERN = r'https:\/\/a\.ltrbxd\.com\/resized\/.*?\.jpg'
 
@@ -22,7 +23,7 @@ def create_posters_dir(parent_dir: str, dir_name: str) -> str:
     if not Path.exists(folder_path):
         os.makedirs(folder_path)
         print(f'{dir_name} folder created...')
-    
+
     return str(folder_path)
 
 
@@ -36,7 +37,12 @@ def get_poster_url(film_page_contents: str, url_pattern=FILM_POSTER_URL_PATTERN)
     """Returns the url of the film's poster, given the url of the film page itself.
     Returns None if there is no match (dictated by the url pattern) for a film poster.
     """
-    if match := re.search(url_pattern, film_page_contents):
+    soup = BeautifulSoup(film_page_contents, 'html.parser')
+
+    # find the poster links in the script tags of the page
+    script_tags = str(soup.find_all('script'))
+
+    if match := re.search(url_pattern, script_tags):
         poster_url = match.group(0)
         return poster_url
     return None
