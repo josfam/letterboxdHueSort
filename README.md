@@ -22,9 +22,26 @@ Here are only a few of these publicly available lists:
 - [My Favorite Films (Sorted by Color*)](https://letterboxd.com/cinemacardboard/list/my-favorite-films-sorted-by-color/) by  Cinematic Cardboard
 - [my favorite movies but organized by color](https://letterboxd.com/rachel_remeny/list/my-favorite-movies-but-organized-by-color/) by  rachel remeny
 
+## The problem
+
+At the time of writing, many of these lists are manually ordered by the users themselves.
+\
+Letterboxd does not offer "Order by film poster color" functionality for users that wish to do so.
+\
+\
 Manually ordering movie posters from a list of 50 films is hard enough.
 \
 Manually ordering movie posters from a list of a few thousand films is a nightmare to say the least.
+\
+\
+\
+To illustrate the pain further, here are some sample conversations on two separate Letterboxd lists:
+\
+\
+![user-tried-to-sort-by-color-but-failed](images/problem-to-solve/tried-and-failed.jpeg)
+\
+\
+![user-does-not-have-free-time-to-sort-by-color](images/problem-to-solve/no-free-time.jpeg)
 
 ## Examples
 
