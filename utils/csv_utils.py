@@ -26,6 +26,17 @@ def get_csv_absolute_path(film_csv_path: str) -> str:
     """Gets and returns the user-entered absolute path of the csv file.
 
     If no absolute path is given, the user is repeatedly prompted.
+
+    Parameters
+    ----------
+    film_csv_path : str
+        The absolute path of the csv file of films.
+
+    Returns
+    -------
+    str
+        The absolute path of the csv file of films.
+        If no absolute path is provided, one is continuously asked for.
     """
     # only absolute paths are accepted
     while not PurePath.is_absolute(PurePath(film_csv_path)):
@@ -50,6 +61,20 @@ def get_csv_path(short_message: str) -> str:
 
     The message displayed while asking for input is a combination of the provided short message,
     and a message that asks for an absolute path to be entered.
+
+    Parameters
+    ----------
+    short_message : str
+        The short message, that will be combined with the message asking for an absolute path.
+
+    Returns
+    -------
+        str
+            The path to the csv file entered by the user.
+    Notes
+    -----
+    Validating whether the csv path is in fact an absolute path is not done in this
+    function.
     """
     full_message = dedent(
         f"""
@@ -69,18 +94,32 @@ def get_csv_path(short_message: str) -> str:
 
 
 def is_valid_letterboxd_format(
-    csv_file: str, max_lines_to_check=MAX_CSV_ROWS_TO_FIND_HEADERS, header_pattern=CSV_REQUIRED_HEADERS_PATTERN
+    csv_file: str,
+    max_lines_to_check: int = MAX_CSV_ROWS_TO_FIND_HEADERS,
+    header_pattern: str = CSV_REQUIRED_HEADERS_PATTERN,
 ) -> bool:
     """Checks whether the provided csv list of films has column headers compatible with
     Letterboxd's csv format.
 
-    The provided file must include at least the three columns `URL`(or `LetterboxdURI`), `Name`, and `Year`.
+    Parameters
+    ----------
+    csv_file : str
+        The film csv file to be checked.
+    max_lines_to_check : int
+        The maximum number of lines to check in the csv file, beyond which if no header columns are found,
+        the csv file is considered invalid.
+    header_pattern : str
+        The pattern used to find and match the accepted column headers.
 
-    The `URL` points to the film's page on `https://letterboxd.com/`,
+    Returns
+    -------
+    bool
+        True if the csv file has the required headers, False otherwise.
 
-    The `Name` is the name/title of the film, and
+    Notes
+    -----
+    The required column headers are `Name`, `URL`, and `Year`, which can occur in any order in the csv file.
 
-    The `Year` is the year of release of the film.
     """
     with open(csv_file, 'r', encoding='utf-8') as f:
         line_count = 0
@@ -98,11 +137,24 @@ def is_valid_letterboxd_format(
     return True
 
 
-def get_csv_sections(csv_file: str, header_pattern=CSV_REQUIRED_HEADERS_PATTERN) -> CSVInfo:
-    """Returns the information in the csv file, split into three parts:
-    1) The extra information included in the csv file before the header row is encountered
-    2) The headers themselves
-    3) The information after the headers
+def get_csv_sections(csv_file: str, header_pattern: str = CSV_REQUIRED_HEADERS_PATTERN) -> CSVInfo:
+    """Returns the information in the csv file, split into three sections: extra info, headers, film info.
+
+    Parameters
+    ----------
+    csv_file : str
+        The film csv file to be processed.
+    header_pattern : str
+        The pattern used to find and match the accepted column headers.
+    
+    Returns
+    -------
+    CSVInfo
+        A named tuple containing sections extracted from the csv file. The sections include:
+        
+        * `extra_info`: a list of all the rows the appear before the header row.
+        * `headers`: a list containing the header row itself.
+        * `film_info`: a list of rows that come after the header row.
     """
     extra_info = []
     headers = None
@@ -128,7 +180,13 @@ def get_csv_sections(csv_file: str, header_pattern=CSV_REQUIRED_HEADERS_PATTERN)
 
 
 def valid_csv_format_message() -> str:
-    """Returns information about expected format for the movie list csv file."""
+    """Returns information about expected format of the film csv file.
+    
+    Returns
+    -------
+        str
+            A brief description and an example table showing the expected format of the film csv file.
+    """
     message = dedent(
         f"""
     Could not find all the required column labels `Name`, `URL` and `Year`.
