@@ -45,8 +45,8 @@ def get_film_page_html(
     ----------
     film_url : str
         The Letterboxd url of this movie's page.
-    film_name : str
-        The name of the film.
+    msg : str
+        The message to show when showing the progress indicator.
     progress_indicator : callable[[str, Optional[int]], None]
         A callable function that shows a progress bar.
 
@@ -108,8 +108,8 @@ def get_poster_contents(
     ----------
     film_poster_url : str
         The url of the film poster image.
-    film_name : str
-        The name of the film.
+    msg : str
+        The message to show when showing the progress indicator.
     progress_indicator : callable[[str, Optional[int]], None]
         A callable function that shows a progress bar.
 
