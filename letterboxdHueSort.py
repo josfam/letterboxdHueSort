@@ -14,7 +14,7 @@ from utils.poster_utils import (
     download_poster,
     create_posters_dir,
 )
-
+import requests
 
 parser = argparse.ArgumentParser()
 parser.add_argument('film_list_csv', help='Absolute path of the csv file representing your letterboxd film list')
@@ -37,13 +37,25 @@ def main():
     for film in csv_info.film_info:
         film_url = film['URL']
         film_name = film['Name']
-        page_contents = get_film_page_html(film_url, film_name)
+        try:
+            msg = f'Searching film page'
+            page_contents = get_film_page_html(film_url, msg)
+        except requests.exceptions.ConnectionError:
+            sys.exit('❗ There seems to be a problem with your internet connection.')
+        except KeyboardInterrupt:
+            sys.exit('\n👋 Goodbye for now')
+
         poster_url = get_poster_url(page_contents)
 
         if poster_url:
-            print(f"Found poster for {film_name}")
-            poster_content = get_poster_contents(film_poster_url=poster_url, film_name=film_name)
-            download_poster(poster_contents=poster_content, download_location=posters_dir, film_name=film_name)
+            try:
+                msg = 'Fetching poster'
+                poster_content = get_poster_contents(poster_url, msg)
+            except requests.exceptions.ConnectionError:
+                sys.exit('❗ There seems to be a problem with your internet connection.')
+            except KeyboardInterrupt:
+                sys.exit('\n👋 Goodbye for now')
+
             print()
         else:
             print(f"Couldn't find poster for {film['Name']}")

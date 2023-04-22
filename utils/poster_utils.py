@@ -58,9 +58,12 @@ def get_film_page_html(
     str
         The html contents of the movie's Letterboxd page.
     """
-    film_page_html = requests.get(film_url, stream=True)
+    try:
+        film_page_html = requests.get(film_url, stream=True)
+    except requests.exceptions.ConnectionError:
+        raise requests.exceptions.ConnectionError
+
     total = film_page_html.headers.get('content-length')
-    msg = f'Getting film page for {film_name}'
 
     if not total:
         progress_indicator(msg, None)
@@ -117,9 +120,12 @@ def get_poster_contents(
     bytes
         The raw content (bytes) of the film poster image.
     """
-    poster_contents = requests.get(film_poster_url)
+    try:
+        poster_contents = requests.get(film_poster_url)
+    except requests.exceptions.ConnectionError:
+        raise requests.exceptions.ConnectionError
+
     total = poster_contents.headers.get('content-length')
-    msg = f'Fetching poster for {film_name}'
 
     if not total:
         progress_indicator(msg, None)
