@@ -30,13 +30,16 @@ def main():
         sys.exit(valid_csv_format_message())
 
     csv_info = get_csv_sections(csv_path)
-    
+
     # directory in which to save the posters
     posters_dir = create_posters_dir(parent_dir=str(PurePath(csv_path).parent), dir_name='posters')
 
     for film in csv_info.film_info:
         film_url = film['URL']
         film_name = film['Name']
+        print()
+        print(f'🎬 {film_name.upper()}')
+
         try:
             msg = f'Searching film page'
             page_contents = get_film_page_html(film_url, msg)
@@ -48,6 +51,7 @@ def main():
         poster_url = get_poster_url(page_contents)
 
         if poster_url:
+            print(f'Found poster')
             try:
                 msg = 'Fetching poster'
                 poster_content = get_poster_contents(poster_url, msg)
@@ -56,9 +60,12 @@ def main():
             except KeyboardInterrupt:
                 sys.exit('\n👋 Goodbye for now')
 
+            msg = 'Saving poster'
+            download_poster(poster_content, film_name, posters_dir, msg)
             print()
         else:
-            print(f"Couldn't find poster for {film['Name']}")
+            print(f"❌ Couldn't find poster")
+            print()
             continue
 
 
