@@ -15,6 +15,7 @@ from utils.poster_utils import (
     create_posters_dir,
 )
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument('film_list_csv', help='Absolute path of the csv file representing your letterboxd film list')
 args = parser.parse_args()
@@ -34,13 +35,16 @@ def main():
     posters_dir = create_posters_dir(parent_dir=str(PurePath(csv_path).parent), dir_name='posters')
 
     for film in csv_info.film_info:
-        page = get_film_page_html(film['URL'])
-        poster_url = get_poster_url(page)
+        film_url = film['URL']
+        film_name = film['Name']
+        page_contents = get_film_page_html(film_url, film_name)
+        poster_url = get_poster_url(page_contents)
 
         if poster_url:
-            poster_content = get_poster_contents(poster_url)
-            film_name = film['Name']
+            print(f"Found poster for {film_name}")
+            poster_content = get_poster_contents(film_poster_url=poster_url, film_name=film_name)
             download_poster(poster_contents=poster_content, download_location=posters_dir, film_name=film_name)
+            print()
         else:
             print(f"Couldn't find poster for {film['Name']}")
             continue
