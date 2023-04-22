@@ -124,7 +124,7 @@ def get_poster_contents(
     if not total:
         progress_indicator(msg, None)
     else:
-        progress_indicator(msg, total)
+        progress_indicator(msg, int(total))
     return poster_contents.content
 
 
