@@ -6,6 +6,8 @@ import requests
 from typing import Optional
 from pathlib import Path, PurePath
 from bs4 import BeautifulSoup
+from utils.progress_utils import show_progress_bar
+from typing import Callable, Optional
 
 FILM_POSTER_URL_PATTERN = r'https:\/\/a\.ltrbxd\.com\/resized\/.*?\.jpg'
 
@@ -34,21 +36,37 @@ def create_posters_dir(parent_dir: str, dir_name: str) -> str:
     return str(folder_path)
 
 
-def get_film_page_html(film_url: str) -> str:
+def get_film_page_html(
+    film_url: str, film_name: str, progress_indicator: Callable[[str, Optional[int]], None] = show_progress_bar
+) -> str:
     """Returns the contents (the html) of a film's letterboxd page.
 
     Parameters
     ----------
     film_url : str
         The Letterboxd url of this movie's page.
+    film_name : str
+        The name of the film.
+    progress_indicator : callable[[str, Optional[int]], None]
+        A callable function that shows a progress bar.
+
+        The function takes a string that will be the message displayed alongside the progress bar.
+        Optionally, an integer representing the total size of data being processed can be provided.
 
     Returns
     -------
     str
         The html contents of the movie's Letterboxd page.
     """
-    film_page_html = requests.get(film_url).text
-    return film_page_html
+    film_page_html = requests.get(film_url, stream=True)
+    total = film_page_html.headers.get('content-length')
+    msg = f'Getting film page for {film_name}'
+
+    if not total:
+        progress_indicator(msg, None)
+    else:
+        progress_indicator(msg, int(total))
+    return film_page_html.text
 
 
 def get_poster_url(film_page_contents: str, url_pattern: str = FILM_POSTER_URL_PATTERN) -> Optional[str]:
@@ -78,21 +96,36 @@ def get_poster_url(film_page_contents: str, url_pattern: str = FILM_POSTER_URL_P
     return None
 
 
-def get_poster_contents(film_poster_url: str) -> bytes:
+def get_poster_contents(
+    film_poster_url: str, film_name: str, progress_indicator: Callable[[str, Optional[int]], None] = show_progress_bar
+) -> bytes:
     """Returns the raw content (bytes) of the film poster image that is located at the given url.
 
     Parameters
     ----------
     film_poster_url : str
         The url of the film poster image.
+    film_name : str
+        The name of the film.
+    progress_indicator : callable[[str, Optional[int]], None]
+        A callable function that shows a progress bar.
 
+        The function takes a string that will be the message displayed alongside the progress bar.
+        Optionally, an integer representing the total size of data being processed can be provided.
     Returns
     -------
     bytes
         The raw content (bytes) of the film poster image.
     """
-    poster_contents = requests.get(film_poster_url).content
-    return poster_contents
+    poster_contents = requests.get(film_poster_url)
+    total = poster_contents.headers.get('content-length')
+    msg = f'Fetching poster for {film_name}'
+
+    if not total:
+        progress_indicator(msg, None)
+    else:
+        progress_indicator(msg, total)
+    return poster_contents.content
 
 
 def download_poster(poster_contents: bytes, film_name: str, download_location: str, extension='.jpg') -> None:
