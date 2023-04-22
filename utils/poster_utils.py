@@ -37,7 +37,7 @@ def create_posters_dir(parent_dir: str, dir_name: str) -> str:
 
 
 def get_film_page_html(
-    film_url: str, film_name: str, progress_indicator: Callable[[str, Optional[int]], None] = show_progress_bar
+    film_url: str, msg: str, progress_indicator: Callable[[str, Optional[int]], None] = show_progress_bar
 ) -> str:
     """Returns the contents (the html) of a film's letterboxd page.
 
@@ -100,7 +100,7 @@ def get_poster_url(film_page_contents: str, url_pattern: str = FILM_POSTER_URL_P
 
 
 def get_poster_contents(
-    film_poster_url: str, film_name: str, progress_indicator: Callable[[str, Optional[int]], None] = show_progress_bar
+    film_poster_url: str, msg: str, progress_indicator: Callable[[str, Optional[int]], None] = show_progress_bar
 ) -> bytes:
     """Returns the raw content (bytes) of the film poster image that is located at the given url.
 
