@@ -33,12 +33,19 @@ def main():
 
     # directory in which to save the posters
     posters_dir = create_posters_dir(parent_dir=str(PurePath(csv_path).parent), dir_name='posters')
+    # file extension with which posters will be saved
+    img_extension = '.jpg'
 
     for film in csv_info.film_info:
         film_url = film['URL']
         film_name = film['Name']
         print()
         print(f'🎬 {film_name.upper()}')
+
+        # check if the poster already exists before trying to download it
+        if Path.exists(Path(posters_dir) / Path( film_name + img_extension)):
+            print('Poster already exists. Skipping this film')
+            continue
 
         try:
             msg = f'Searching film page'
@@ -61,7 +68,7 @@ def main():
                 sys.exit('\n👋 Goodbye for now')
 
             msg = 'Saving poster'
-            download_poster(poster_content, film_name, posters_dir, msg)
+            download_poster(poster_content, film_name, posters_dir, msg, img_extension)
             print()
         else:
             print(f"❌ Couldn't find poster")
