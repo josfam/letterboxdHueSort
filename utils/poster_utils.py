@@ -12,7 +12,7 @@ from typing import Callable, Optional
 FILM_POSTER_URL_PATTERN = r'https:\/\/a\.ltrbxd\.com\/resized\/.*?\.jpg'
 
 
-def create_posters_dir(parent_dir: str, dir_name: str) -> str:
+def create_posters_dir(parent_dir: str, dir_name: str, msg: str) -> str:
     """Creates the directory in which the downloaded posters will be saved.
 
     Parameters
@@ -21,7 +21,9 @@ def create_posters_dir(parent_dir: str, dir_name: str) -> str:
         The parent directory, inside which the poster directory will be created.
     dir_name : str
         The name of the poster directory that will be created.
-
+    msg : str
+        The message to show when after creating the folder.
+    
     Returns
     -------
     str
@@ -31,7 +33,7 @@ def create_posters_dir(parent_dir: str, dir_name: str) -> str:
 
     if not Path.exists(folder_path):
         os.makedirs(folder_path)
-        print(f'{dir_name} folder created...')
+        print(msg)
 
     return str(folder_path)
 

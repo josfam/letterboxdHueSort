@@ -31,10 +31,11 @@ def main():
 
     csv_info = get_csv_sections(csv_path)
 
-    # directory in which to save the posters
-    posters_dir = create_posters_dir(parent_dir=str(PurePath(csv_path).parent), dir_name='posters')
-    # file extension with which posters will be saved
-    img_extension = '.jpg'
+    dir_name = 'posters'  # directory in which to save the posters
+    parent_dir = str(PurePath(csv_path).parent)
+    msg = f'\n📁 {dir_name} folder created'
+    posters_dir = create_posters_dir(parent_dir, dir_name, msg)
+    img_extension = '.jpg'  # file extension with which posters will be saved
 
     for film in csv_info.film_info:
         film_url = film['URL']
