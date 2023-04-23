@@ -130,3 +130,6 @@ dmypy.json
 
 # automatically downloaded posters
 *posters/
+
+# asciinema recordings
+*asciinema-recs/
