@@ -47,7 +47,7 @@ To illustrate the pain further, here are some sample conversations on two separa
 
 For a visual representation of this type of "hue sorting" (aside from the letterboxd examples listed above), here is a **manually sorted**
 \
-representation of movie posters from the `images/test_images` folder.
+representation of movie posters from the `images/sample-images` folder.
 \
 \
 ![approximate-order-of-manually-sorted-film-posters](images/manual-sort-examples/manual-sort-of-test-images.jpg)
