@@ -47,7 +47,7 @@ To illustrate the pain further, here are some sample conversations on two separa
 
 For a visual representation of this type of "hue sorting" (aside from the letterboxd examples listed above), here is a **manually sorted**
 \
-representation of movie posters from the `test_images` folder.
+representation of movie posters from the `images/test_images` folder.
 \
 \
 ![approximate-order-of-manually-sorted-film-posters](images/manual-sort-examples/manual-sort-of-test-images.jpg)
@@ -56,3 +56,32 @@ representation of movie posters from the `test_images` folder.
 _Note_: The film posters above are just a visual aid, and not actually output from the letterboxdHueSort program.
 \
 The sort order of the letterboxdHueSort program will differ from the above manually generated order.
+
+## Demo
+
+The following demo uses the csv file `sample_list.csv` inside the `samples` folder
+
+### Downloading film posters
+
+When the program is run with an absolute path to the existing film csv file, posters are downloaded
+\
+in a folder named `posters`, which is created in the same location as the csv file.
+\
+\
+![posters-being-downloaded-into-posters-folder](images/gifs/get-posters.gif)
+\
+\
+The program was ended before the poster for 'I ORIGINS' was completely saved.
+\
+In this case, the program will continue (the next time it is ran) from the latest film whose poster
+\
+was not saved. Films with already downloaded posters are skipped.
+\
+\
+![existing-posters-being-skipped](images/gifs/skip-posters.gif)
+\
+\
+The above two runs of the program downloaded the posters of the films into the `posters` folder
+\
+\
+![posters-downloaded-into-the-posters-folder](images/posters-folder/downloaded-posters.png)
