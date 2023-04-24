@@ -33,7 +33,7 @@ def main():
 
     dir_name = 'posters'  # directory in which to save the posters
     parent_dir = str(PurePath(csv_path).parent)
-    msg = f'\n✔ {dir_name} folder created\n'
+    msg = f'\n┣━ {dir_name} folder created\n'
     posters_dir = create_posters_dir(parent_dir, dir_name, msg)
     img_extension = '.jpg'  # file extension with which posters will be saved
 
@@ -44,33 +44,33 @@ def main():
 
         # check if the poster already exists before trying to download it
         if Path.exists(Path(posters_dir) / Path( film_name + img_extension)):
-            print(' Poster already exists. Skipping this film')
+            print(' ┗ Poster already exists. Skipping this film')
             continue
 
         try:
-            msg = f' ↗ Searching film page'
+            msg = f' ┃ Searching film page'
             page_contents = get_film_page_html(film_url, msg)
         except requests.exceptions.ConnectionError:
-            sys.exit('✕ There seems to be a problem with your internet connection.\n')
+            sys.exit('━┫ There seems to be a problem with your internet connection.\n')
         except KeyboardInterrupt:
-            sys.exit('\n╭ Goodbye for now ╮\n')
+            sys.exit('\n┏━━ Goodbye for now ━━┓\n')
 
         poster_url = get_poster_url(page_contents)
 
         if poster_url:
-            print(f' ✔ Found poster')
+            print(f' ┃ Found poster')
             try:
-                msg = ' ↗ Fetching poster'
+                msg = ' ┃ Fetching poster'
                 poster_content = get_poster_contents(poster_url, msg)
             except requests.exceptions.ConnectionError:
                 sys.exit('✕ There seems to be a problem with your internet connection.\n')
             except KeyboardInterrupt:
-                sys.exit('\n╭ Goodbye for now ╮\n')
+                sys.exit('\n┏━━ Goodbye for now ━━┓\n')
 
-            msg = ' ↓ Saving poster'
+            msg = ' ┗ Saving poster'
             download_poster(poster_content, film_name, posters_dir, msg, img_extension)
         else:
-            print(f"✕ Couldn't find poster")
+            print(f"━┫ Couldn't find poster")
             print()
             continue
 
