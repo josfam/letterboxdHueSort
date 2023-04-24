@@ -78,7 +78,7 @@ In this case, the program will continue (the next time it is ran) from the lates
 was not saved. Films with already downloaded posters are skipped.
 \
 \
-![existing-posters-being-skipped](images/gifs/skip-posters.gif)
+![existing-posters-being-skipped](images/gifs/resume-downloads.gif)
 \
 \
 The above two runs of the program downloaded the posters of the films into the `posters` folder
