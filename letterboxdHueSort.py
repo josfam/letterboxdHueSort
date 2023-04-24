@@ -15,6 +15,12 @@ from utils.poster_utils import (
     create_posters_dir,
 )
 import requests
+from rich.console import Console
+
+HARD_ERROR_COLOR = 'deep_pink4'
+IN_PROGRESS_COLOR = 'green'
+SOFT_ERROR_COLOR = 'grey70'
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('film_list_csv', help='Absolute path of the csv file representing your letterboxd film list')
@@ -24,6 +30,7 @@ film_csv_path: str = args.film_list_csv
 
 
 def main():
+    console = Console(color_system='truecolor')
     csv_path = get_csv_absolute_path(film_csv_path)
 
     if not is_valid_letterboxd_format(csv_path):
@@ -51,26 +58,28 @@ def main():
             msg = f' ┃ Searching film page'
             page_contents = get_film_page_html(film_url, msg)
         except requests.exceptions.ConnectionError:
-            sys.exit('━┫ There seems to be a problem with your internet connection.\n')
+            console.print(' ━┫ There seems to be a problem with your internet connection.\n', style=HARD_ERROR_COLOR)
+            sys.exit()
         except KeyboardInterrupt:
-            sys.exit('\n┏━━ Goodbye for now ━━┓\n')
+            sys.exit('\n┗━ Goodbye for now ━━━\n')
 
         poster_url = get_poster_url(page_contents)
 
         if poster_url:
-            print(f' ┃ Found poster')
+            console.print(' ┃ Found poster', style=IN_PROGRESS_COLOR)
             try:
                 msg = ' ┃ Fetching poster'
                 poster_content = get_poster_contents(poster_url, msg)
             except requests.exceptions.ConnectionError:
-                sys.exit('✕ There seems to be a problem with your internet connection.\n')
+                console.print(' ━┫ There seems to be a problem with your internet connection.\n', style=HARD_ERROR_COLOR)
+                sys.exit()
             except KeyboardInterrupt:
-                sys.exit('\n┏━━ Goodbye for now ━━┓\n')
+                sys.exit('\n┗━ Goodbye for now ━━━\n')
 
             msg = ' ┗ Saving poster'
             download_poster(poster_content, film_name, posters_dir, msg, img_extension)
         else:
-            print(f"━┫ Couldn't find poster")
+            console.print(" ━┫ Couldn't find poster", style=SOFT_ERROR_COLOR)
             print()
             continue
 
