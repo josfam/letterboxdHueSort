@@ -8,9 +8,11 @@ from pathlib import Path, PurePath
 from bs4 import BeautifulSoup
 from utils.progress_utils import show_progress_bar
 from typing import Callable, Optional
+from PIL import Image
+import io
 
 FILM_POSTER_URL_PATTERN = r'https:\/\/a\.ltrbxd\.com\/resized\/.*?\.jpg'
-
+SHRINK_FACTOR = 2
 
 def create_posters_dir(parent_dir: str, dir_name: str, msg: str) -> str:
     """Creates the directory in which the downloaded posters will be saved.
@@ -164,6 +166,9 @@ def download_poster(
     None
     """
     picture_path = str(Path(download_location) / Path(film_name + extension))
-    with open(picture_path, 'wb') as f:
-        f.write(poster_contents)
+
+    with Image.open(io.BytesIO(poster_contents)) as im:
+        smaller_dims = (im.width // SHRINK_FACTOR, im.height // SHRINK_FACTOR)
+        resized = im.resize(smaller_dims) # save memory by saving a smaller version of the poster
+        resized.save(picture_path)
         progress_indicator(msg, None)
