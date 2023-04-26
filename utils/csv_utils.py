@@ -6,6 +6,7 @@ import sys
 import csv
 import re
 from collections import namedtuple
+import os
 
 MAX_CSV_ROWS_TO_FIND_HEADERS = 6
 
@@ -122,6 +123,10 @@ def is_valid_letterboxd_format(
 
     """
     with open(csv_file, 'r', encoding='utf-8') as f:
+        # check that the file is not empty
+        if not os.path.getsize(f.name):
+            return False
+        
         line_count = 0
         reader = csv.reader(f)
 
