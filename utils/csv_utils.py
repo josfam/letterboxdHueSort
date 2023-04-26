@@ -123,23 +123,18 @@ def is_valid_letterboxd_format(
 
     """
     with open(csv_file, 'r', encoding='utf-8') as f:
-        # check that the file is not empty
-        if not os.path.getsize(f.name):
-            return False
-        
-        line_count = 0
-        reader = csv.reader(f)
+        lines = []
 
-        for line in reader:
-            if line_count == max_lines_to_check:
-                return False
+        while True:
+            line = f.readline()
+            if not line or (not len(lines) < max_lines_to_check):
+                break
+            lines.append(line)
+        rows = ''.join(lines)
 
-            rows = ', '.join(line)
-            # Name and URL column headers can be in any order
-            if re.search(header_pattern, rows, re.VERBOSE):
-                return True
-            line_count += 1
-    return True
+        if re.search(header_pattern, rows, re.VERBOSE):
+            return True
+    return False
 
 
 def get_csv_sections(csv_file: str, header_pattern: str = CSV_REQUIRED_HEADERS_PATTERN) -> CSVInfo:
@@ -151,12 +146,12 @@ def get_csv_sections(csv_file: str, header_pattern: str = CSV_REQUIRED_HEADERS_P
         The film csv file to be processed.
     header_pattern : str
         The pattern used to find and match the accepted column headers.
-    
+
     Returns
     -------
     CSVInfo
         A named tuple containing sections extracted from the csv file. The sections include:
-        
+
         * `extra_info`: a list of all the rows the appear before the header row.
         * `headers`: a list containing the header row itself.
         * `film_info`: a list of rows that come after the header row.
@@ -186,7 +181,7 @@ def get_csv_sections(csv_file: str, header_pattern: str = CSV_REQUIRED_HEADERS_P
 
 def valid_csv_format_message() -> str:
     """Returns information about expected format of the film csv file.
-    
+
     Returns
     -------
         str
