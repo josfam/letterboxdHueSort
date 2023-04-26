@@ -133,3 +133,6 @@ dmypy.json
 
 # asciinema recordings
 *asciinema-recs/
+
+# launch configurations
+launch.json
