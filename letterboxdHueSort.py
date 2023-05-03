@@ -36,12 +36,28 @@ def main():
     if not is_valid_letterboxd_format(csv_path):
         sys.exit(valid_csv_format_message())
 
-    csv_info = get_csv_sections(csv_path)
 
-    dir_name = 'posters'  # directory in which to save the posters
-    parent_dir = str(PurePath(csv_path).parent)
-    msg = f'\n┣━ {dir_name} folder created\n'
-    posters_dir = create_posters_dir(parent_dir, dir_name, msg)
+
+def all_posters_downloaded(csv_sections: CSVInfo, posters_dir_path: Path) -> bool:
+    """Returns True if all the posters of the films in the csv file have been downloaded. Returns False otherwise.
+
+    Parameters
+    ----------
+    csv_sections : CSVInfo
+        The three sections of the csv, i.e.`extra_info`, `headers`, and `film_info`.
+    posters_dir_path : Path
+        The path representing the location of the posters directory, in which posters are downloaded.
+
+    Returns
+    -------
+    bool
+        True if all the posters of the films in the csv file have been downloaded, False otherwise.
+    """
+    poster_count = len(list(posters_dir_path.iterdir()))
+    movie_count = len(csv_sections.film_info)
+    return poster_count == movie_count
+
+
     img_extension = '.jpg'  # file extension with which posters will be saved
 
     for film in csv_info.film_info:
