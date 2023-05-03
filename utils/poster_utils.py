@@ -9,10 +9,17 @@ from bs4 import BeautifulSoup
 from utils.progress_utils import show_progress_bar
 from typing import Callable, Optional
 from PIL import Image
+from utils.csv_utils import CSVInfo
+from rich.console import Console
 import io
+import sys
+
 
 FILM_POSTER_URL_PATTERN = r'https:\/\/a\.ltrbxd\.com\/resized\/.*?\.jpg'
 SHRINK_FACTOR = 2
+HARD_ERROR_COLOR = 'deep_pink4'
+IN_PROGRESS_COLOR = 'green'
+SOFT_ERROR_COLOR = 'grey70'
 
 def create_posters_dir(parent_dir: str, dir_name: str, msg: str) -> str:
     """Creates the directory in which the downloaded posters will be saved.
@@ -172,3 +179,81 @@ def download_poster(
         resized = im.resize(smaller_dims) # save memory by saving a smaller version of the poster
         resized.save(picture_path)
         progress_indicator(msg, None)
+
+
+def all_posters_downloaded(csv_sections: CSVInfo, posters_dir_path: Path) -> bool:
+    """Returns True if all the posters of the films in the csv file have been downloaded. Returns False otherwise.
+
+    Parameters
+    ----------
+    csv_sections : CSVInfo
+        The three sections of the csv, i.e.`extra_info`, `headers`, and `film_info`.
+    posters_dir_path : Path
+        The path representing the location of the posters directory, in which posters are downloaded.
+
+    Returns
+    -------
+    bool
+        True if all the posters of the films in the csv file have been downloaded, False otherwise.
+    """
+    poster_count = len(list(posters_dir_path.iterdir()))
+    movie_count = len(csv_sections.film_info)
+    return poster_count == movie_count
+
+
+def get_posters(csv_sections: CSVInfo, posters_dir: Path, console: Console) -> None:
+    """Finds and downloads the posters for the films listed in the csv file.
+
+    Parameters
+    ----------
+    csv_sections : CSVInfo
+        The three sections of the csv, i.e.`extra_info`, `headers`, and `film_info`.
+    posters_dir : Path
+        The path representing the location of the posters directory, in which posters are downloaded.
+    console : Console
+        A Console object from the `rich` library, that is used to display colors and other styles.
+
+    Returns
+    -------
+    None
+    """
+    img_extension = '.jpg'  # file extension with which posters will be saved
+    for film in csv_sections.film_info:
+        film_url = film['URL']
+        film_name = film['Name']
+        print(f'\n ┃ {film_name.upper()}')
+
+        # check if the poster already exists before trying to download it
+        if Path.exists(Path(posters_dir) / Path(film_name + img_extension)):
+            print(' ┗ Poster already exists. Skipping this film')
+            continue
+        try:
+            msg = f' ┃ Searching film page'
+            page_contents = get_film_page_html(film_url, msg)
+        except requests.exceptions.ConnectionError:
+            console.print(' ━┫ There seems to be a problem with your internet connection.\n', style=HARD_ERROR_COLOR)
+            sys.exit()
+        except KeyboardInterrupt:
+            sys.exit('\n┗━ Goodbye for now ━━━\n')
+
+        poster_url = get_poster_url(page_contents)
+
+        if poster_url:
+            console.print(' ┃ Found poster', style=IN_PROGRESS_COLOR)
+            try:
+                msg = ' ┃ Fetching poster'
+                poster_content = get_poster_contents(poster_url, msg)
+            except requests.exceptions.ConnectionError:
+                console.print(
+                    ' ━┫ There seems to be a problem with your internet connection.\n', style=HARD_ERROR_COLOR
+                )
+                sys.exit()
+            except KeyboardInterrupt:
+                sys.exit('\n┗━ Goodbye for now ━━━\n')
+
+            msg = ' ┗ Saving poster'
+            download_poster(poster_content, film_name, str(posters_dir), msg, img_extension)
+        else:
+            console.print(" ━┫ Couldn't find poster", style=SOFT_ERROR_COLOR)
+            print()
+            continue
