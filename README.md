@@ -1,3 +1,5 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
 # letterboxdHueSort
 
 A utility that automatically sorts films in a letterboxd list by poster colour.
