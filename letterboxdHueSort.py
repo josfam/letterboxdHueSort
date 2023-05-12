@@ -8,18 +8,13 @@ from utils.csv_utils import (
     get_csv_sections,
 )
 from utils.poster_utils import (
-    get_film_page_html,
-    get_poster_url,
-    get_poster_contents,
-    download_poster,
     create_posters_dir,
     all_posters_downloaded,
-    get_posters
+    get_posters,
 )
-import requests
-from rich.console import Console
-from utils.csv_utils import CSVInfo
+from utils.color_utils import get_dominant_colors
 
+from rich.console import Console
 
 parser = argparse.ArgumentParser()
 parser.add_argument('film_list_csv', help='Absolute path of the csv file representing your letterboxd film list')
