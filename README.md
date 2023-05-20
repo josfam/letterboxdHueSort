@@ -87,3 +87,10 @@ The above two runs of the program downloaded the posters of the films into the `
 \
 \
 ![posters-downloaded-into-the-posters-folder](images/posters-folder/downloaded-posters.png)
+
+## TODO
+
+- Extract color info from each poster.
+- Use the color info to find the most dominant color for each poster.
+- Sort the posters by most dominant color.
+- Write a new csv file, re-arranging the films by the result of the sort.
